@@ -137,7 +137,15 @@
 
 ---
 # Thiết kế Use Cases
-![Use Case Diagram](usecase.svg)
+![Use Case Diagram](img/usecase/usecase.svg)
 
 # Thiết kế Wireframe
 
+## 1. Thiết kế wireframe cho End User
+![End User Wireframe](img/wireframe/enduser/enduser.png)
+
+## 2. Thiết kế wireframe cho Business User
+![End User Wireframe](img/wireframe/businessuser/businessuser.png)
+
+## 3. Thiết kế wireframe cho Amin
+![Admin Wireframe](img/wireframe/admin/admin.png)
