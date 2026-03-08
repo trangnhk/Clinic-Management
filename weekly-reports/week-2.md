@@ -24,11 +24,11 @@
 ## 3. Kế hoạch tuần tới
 | Thành viên | Công việc dự kiến |
 |------------|-------------------|
-| Ngô Hoàng Kiều Trang | Thiết kế API (code backend chính) + thiết kế kiến trúc Flask (blueprint structure) |
-| Nguyễn Thanh Nhi | Thiết kế Class Diagram + Code API |
+| Ngô Hoàng Kiều Trang | / |
+| Nguyễn Thanh Nhi | / |
 ---
 ## 4. Khó khăn / Cần hỗ trợ
-
+- Phần công việc của tuần 3: database design, api design, kiến trúc, test strategy tụi em vẫn chưa hiểu sẽ thực hiện nhw thế nào? Thầy có mẫu hướng dẫn/tham khảo cho từng phần như trên không ạ?
 ---
 *Ngày nộp: 08/03/2026*
 *Xác nhận của Nhóm trưởng: Ngô Hoàng Kiều Trang*
