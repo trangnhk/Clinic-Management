@@ -24,8 +24,8 @@
 ## 3. Kế hoạch tuần tới
 | Thành viên | Công việc dự kiến |
 |------------|-------------------|
-| Ngô Hoàng Kiều Trang | / |
-| Nguyễn Thanh Nhi | / |
+| Ngô Hoàng Kiều Trang | Thiết kế database + dữ liệu test |
+| Nguyễn Thanh Nhi | Thiết kế class diagram |
 ---
 ## 4. Khó khăn / Cần hỗ trợ
 - Phần công việc của tuần 3: database design, api design, kiến trúc, test strategy tụi em vẫn chưa hiểu sẽ thực hiện nhw thế nào? Thầy có mẫu hướng dẫn/tham khảo cho từng phần như trên không ạ?
