@@ -25,8 +25,7 @@
 ## 3. Kế hoạch tuần tới
 | Thành viên | Công việc dự kiến |
 |------------|-------------------|
-| Ngô Hoàng Kiều Trang | Thiết kế wireframe (End User) |
-| Ninh Thị Anh Thư | Thiết kế wireframe (Business User) |
+| Ngô Hoàng Kiều Trang | Thiết kế wireframe (End User + Business User) |
 | Nguyễn Thanh Nhi | Thiết kế wireframe (Admin) |
 ---
 ## 4. Khó khăn / Cần hỗ trợ
