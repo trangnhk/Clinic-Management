@@ -1,6 +1,6 @@
 # Báo cáo Tuần 1
 **Tuần:** 1 (06/02/2026 - 13/02/2026)
-**Nhóm:** 
+**Nhóm:** 1
 **Đề tài:** 5 - Hệ Thống Quản Lý Phòng Khám (Clinic Management)
 **Nhóm trưởng:** Ngô Hoàng Kiều Trang - 2354050141
 ---
@@ -26,7 +26,7 @@
 | Thành viên | Công việc dự kiến |
 |------------|-------------------|
 | Ngô Hoàng Kiều Trang | Thiết kế wireframe (End User) |
-| Ninh Thị Anh Thư | Thiết kế wireframe (Bussiness User) |
+| Ninh Thị Anh Thư | Thiết kế wireframe (Business User) |
 | Nguyễn Thanh Nhi | Thiết kế wireframe (Admin) |
 ---
 ## 4. Khó khăn / Cần hỗ trợ
