@@ -1,0 +1,45 @@
+{
+  "patient": [
+    {
+      "id": 1,
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "id": 2,
+      "name": "Book Appointment",
+      "url": "/book-appointment"
+    },
+    {
+      "id": 3,
+      "name": "Doctors",
+      "url": "/doctors"
+    }
+  ],
+
+  "doctor": [
+    {
+      "id": 1,
+      "name": "Home",
+      "url": "/doctor/dashboard"
+    },
+    {
+      "id": 2,
+      "name": "Appointment Schedule",
+      "url": "/doctor/appointments"
+    }
+  ],
+
+  "guest": [
+    {
+      "id": 1,
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "id": 2,
+      "name": "Doctors",
+      "url": "/doctors"
+    }
+  ]
+}
