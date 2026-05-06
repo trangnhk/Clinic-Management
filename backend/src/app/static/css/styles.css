@@ -1,0 +1,21 @@
+.doctor-img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;   
+}
+body {
+    background: #f8f9fa;
+}
+
+.navbar .nav-link:hover {
+    color: #0d6efd !important;
+}
+
+#login-form input {
+    height: 45px;
+    font-weight: 500;
+}
+
+.btn-primary {
+    min-width: 180px;
+}

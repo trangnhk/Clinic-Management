@@ -1,0 +1,81 @@
+.calendar-weekdays{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:10px;
+    margin-bottom:12px;
+}
+
+.weekday-item{
+    text-align:center;
+    font-weight:700;
+    padding:10px 0;
+    background:#f8f9fa;
+    border:1px solid #dee2e6;
+    border-radius:12px;
+    color:#495057;
+}
+
+/* Calendar */
+.calendar-grid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:10px;
+}
+
+.calendar-day{
+    min-height:90px;
+    border:1px solid #dee2e6;
+    border-radius:14px;
+    padding:10px;
+    position:relative;
+    background:#fff;
+}
+
+.calendar-day.empty{
+    background:#f8f9fa;
+    border-style:dashed;
+}
+
+.calendar-day-number{
+    font-weight:700;
+}
+
+.calendar-day.has-event{
+    border-color:#dc3545;
+    background:#fff5f5;
+}
+
+.calendar-day.has-event::after{
+    content:'';
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#dc3545;
+    position:absolute;
+    right:10px;
+    bottom:10px;
+}
+
+.calendar-day.today{
+    background:#212529;
+    color:#fff;
+}
+
+.calendar-day.today.has-event::after{
+    background:#fff;
+}
+
+.calendar-day.has-appointment::after{
+    content:'';
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#dc3545;
+    position:absolute;
+    right:10px;
+    bottom:10px;
+}
+
+.calendar-day.today.has-appointment::after{
+    background:#fff;
+}

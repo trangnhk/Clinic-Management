@@ -1,0 +1,70 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center mt-5">
+
+    <div class="col-md-5 text-center">
+
+        <!-- Title -->
+        <h1 class="text-danger fw-bold mb-4">
+            SIGN UP
+        </h1>
+
+        <!-- Form -->
+        <form id="register-form">
+
+            <input type="text"
+                   class="form-control mb-3"
+                   id="username"
+                   placeholder="Username">
+
+            <input type="email"
+                   class="form-control mb-3"
+                   id="email"
+                   placeholder="Email">
+
+            <input type="password"
+                   class="form-control mb-3"
+                   id="password"
+                   placeholder="Password">
+
+            <input type="password"
+                   class="form-control mb-3"
+                   id="confirm_password"
+                   placeholder="Confirm password">
+
+            <button type="submit"
+                    class="btn btn-primary px-5 mt-2">
+                Sign up
+            </button>
+
+        </form>
+
+        <!-- Error -->
+        <div id="error-box"
+             class="text-danger mt-3 fw-bold"></div>
+
+        <!-- Success -->
+        <div id="success-box"
+             class="text-success mt-3 fw-bold"></div>
+
+        <!-- Login link -->
+        <div class="mt-4">
+            Already have account?
+            <a href="/login/" class="fw-bold text-primary">
+                Sign in
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth/register.js') }}"></script>
+{% endblock %}

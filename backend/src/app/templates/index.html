@@ -1,0 +1,79 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center text-center mt-5">
+
+    <div class="col-md-8">
+
+        <!-- Welcome -->
+        <h1 class="text-danger fw-bold mb-4">
+            CLINIC MANAGEMENT
+        </h1>
+
+        <p class="fs-4 mb-4">
+            Welcome to our online clinic system
+        </p>
+
+        <p class="text-muted mb-5">
+            Book appointments easily, view doctors, manage prescriptions,
+            and access your medical records anytime.
+        </p>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+
+            <a href="/book-appointment"
+               class="btn btn-primary px-5">
+                Book Appointment
+            </a>
+
+            <a href="/doctors"
+               class="btn btn-outline-primary px-5">
+                View Doctors
+            </a>
+
+        </div>
+
+        <!-- Features -->
+        <div class="row mt-5">
+
+            <div class="col-md-4 mb-4">
+                <div class="border rounded p-4 bg-white shadow-sm h-100">
+                    <i class="fa-solid fa-calendar-check fa-2x text-primary mb-3"></i>
+                    <h5 class="fw-bold">Easy Booking</h5>
+                    <p class="text-muted small">
+                        Choose doctor, date and time quickly.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="border rounded p-4 bg-white shadow-sm h-100">
+                    <i class="fa-solid fa-user-doctor fa-2x text-primary mb-3"></i>
+                    <h5 class="fw-bold">Professional Doctors</h5>
+                    <p class="text-muted small">
+                        Find experienced doctors by specialty.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="border rounded p-4 bg-white shadow-sm h-100">
+                    <i class="fa-solid fa-file-medical fa-2x text-primary mb-3"></i>
+                    <h5 class="fw-bold">Medical Records</h5>
+                    <p class="text-muted small">
+                        View prescriptions and test results online.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
