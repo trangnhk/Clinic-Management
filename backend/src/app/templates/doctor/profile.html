@@ -1,0 +1,194 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Doctor Profile{% endblock %}
+
+{% block content %}
+<section class="container py-5 doctor-profile-page">
+
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-danger text-uppercase display-6">
+            Doctor's Profile
+        </h1>
+    </div>
+
+    <!-- Profile Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+        <div class="card-body p-4 p-lg-5">
+            <div class="row g-4 align-items-start">
+
+                <!-- Avatar -->
+                <div class="col-lg-3 text-center">
+                    <div class="border rounded-4 bg-light d-flex align-items-center justify-content-center overflow-hidden mx-auto"
+                         style="width:220px;height:260px;">
+                        <img id="doctorAvatar"
+                             src=""
+                             alt="Doctor Avatar"
+                             class="img-fluid w-100 h-100 object-fit-cover">
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div class="col-lg-9">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="fw-semibold text-dark">Fullname:</label>
+                            <div id="doctorFullname" class="text-muted">Loading...</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="fw-semibold text-dark">Number:</label>
+                            <div id="doctorPhone" class="text-muted">Loading...</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="fw-semibold text-dark">Doctor ID:</label>
+                            <div id="doctorCode" class="text-muted">Loading...</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="fw-semibold text-dark">Address:</label>
+                            <div id="doctorAddress" class="text-muted">Loading...</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="fw-semibold text-dark">Date of birth:</label>
+                            <div id="doctorDob" class="text-muted">Loading...</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="fw-semibold text-dark">Specialty:</label>
+                            <div id="doctorSpecialization" class="text-muted">Loading...</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="fw-semibold text-dark">Experience:</label>
+                            <div id="doctorExperience" class="text-muted">Loading...</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="fw-semibold text-dark">Rating:</label>
+                            <div id="doctorRating" class="text-warning fw-semibold">0.0 ★</div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="fw-semibold text-dark">Description:</label>
+                            <div id="doctorDescription" class="text-muted">
+                                Loading...
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Section -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4 p-lg-5">
+
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1">Personal Schedule</h2>
+                    <p class="text-muted mb-0">
+                        Highlighted dates indicate appointments
+                    </p>
+                </div>
+
+                <!-- Filter -->
+                <div class="d-flex gap-2 flex-wrap">
+
+                    <div>
+                        <label class="small text-muted d-block mb-1">View Month</label>
+                        <select id="monthSelect" class="form-select">
+                            <option value="">Month</option>
+                            {% for m in range(1,13) %}
+                            <option value="{{ m }}">{{ m }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="small text-muted d-block mb-1">View Year</label>
+                        <select id="yearSelect" class="form-select">
+                            <option value="">Year</option>
+                            {% for y in range(2026,2101) %}
+                            <option value="{{ y }}">{{ y }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="align-self-end">
+                        <button id="btnLoadCalendar" class="btn btn-danger px-4">
+                            View
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Calendar Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <button id="prevMonthBtn" class="btn btn-outline-secondary btn-sm">
+                    ← Previous
+                </button>
+
+                <h4 id="calendarTitle" class="fw-bold mb-0">
+                    Month Year
+                </h4>
+
+                <button id="nextMonthBtn" class="btn btn-outline-secondary btn-sm">
+                    Next →
+                </button>
+            </div>
+
+            <!-- Weekdays -->
+            <div class="calendar-weekdays">
+                <div class="weekday-item">Mon</div>
+                <div class="weekday-item">Tue</div>
+                <div class="weekday-item">Wed</div>
+                <div class="weekday-item">Thu</div>
+                <div class="weekday-item">Fri</div>
+                <div class="weekday-item">Sat</div>
+                <div class="weekday-item">Sun</div>
+            </div>
+            <!-- Calendar Grid -->
+            <div id="calendarGrid" class="calendar-grid">
+                <!-- JS render real calendar here -->
+            </div>
+
+            <!-- Legend -->
+            <div class="mt-4 d-flex flex-wrap gap-3 small">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="rounded-circle bg-danger d-inline-block"
+                          style="width:14px;height:14px;"></span>
+                    <span>Has appointment</span>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <span class="rounded-circle border d-inline-block"
+                          style="width:14px;height:14px;"></span>
+                    <span>No appointment</span>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <span class="rounded-circle bg-dark d-inline-block"
+                          style="width:14px;height:14px;"></span>
+                    <span>Today</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/calendar.css') }}">
+<script src="{{ url_for('static', filename='js/doctor/profile.js') }}"></script>
+
+{% endblock scripts %}

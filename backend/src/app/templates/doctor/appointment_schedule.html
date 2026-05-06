@@ -1,0 +1,75 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Appointment Schedule{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+
+    <!-- Title -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-danger display-4 text-uppercase">
+            Appointment Schedule
+        </h1>
+    </div>
+
+    <!-- Date Filter -->
+    <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap mb-4">
+
+        <label class="fw-bold fs-3 mb-0">
+            Date of examination
+        </label>
+
+        <input type="date"
+               id="examDate"
+               class="form-control form-control-lg w-auto">
+
+    </div>
+
+    <!-- Table -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:100px;">Time</th>
+                        <th style="width:180px;">Patient's ID</th>
+                        <th style="width:220px;">Patient's name</th>
+                        <th style="width:180px;">Date of birth</th>
+                        <th>Symptoms</th>
+                        <th style="width:180px;">Status</th>
+                        <th style="width:140px;">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="appointmentTableBody">
+                    <tr>
+                        <td colspan="7" class="py-5 text-muted">
+                            Loading appointments...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/doctor/appointment_schedule.js') }}"></script>
+
+<style>
+table th{
+    font-size:18px;
+    white-space:nowrap;
+}
+
+table td{
+    vertical-align:middle;
+}
+
+input[type="date"]{
+    min-width:250px;
+}
+</style>
+{% endblock %}
