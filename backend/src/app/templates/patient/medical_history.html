@@ -1,0 +1,316 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Medical History{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+
+                <div class="d-flex align-items-center gap-3">
+                    <a href="/profile"
+                       class="btn btn-outline-secondary">
+                        ← Back
+                    </a>
+
+                    <h2 class="fw-bold text-danger mb-0">
+                        MEDICAL HISTORY
+                    </h2>
+                </div>
+
+                <span class="badge bg-success fs-6 px-4 py-2"
+                      id="appointment-status">
+                    COMPLETED
+                </span>
+            </div>
+
+            <!-- DATE -->
+            <div class="text-center mb-4">
+                <h5 class="fw-bold">
+                    Date of examination:
+                    <span id="exam-date">--/--/----</span>
+                </h5>
+            </div>
+
+            <!-- PATIENT INFO -->
+            <h4 class="fw-bold mb-3">Patient Information</h4>
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Fullname</label>
+                    <input type="text"
+                           class="form-control"
+                           id="patient-fullname"
+                           disabled>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold">ID</label>
+                    <input type="text"
+                           class="form-control"
+                           id="patient-id"
+                           disabled>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Date of birth</label>
+                    <input type="text"
+                           class="form-control"
+                           id="patient-dob"
+                           disabled>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Phone Number</label>
+                    <input type="text"
+                           class="form-control"
+                           id="patient-phone"
+                           disabled>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Address</label>
+                    <input type="text"
+                           class="form-control"
+                           id="patient-address"
+                           disabled>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Email</label>
+                    <input type="text"
+                           class="form-control"
+                           id="patient-email"
+                           disabled>
+                </div>
+
+            </div>
+
+            <!-- DOCTOR -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+                <h4 class="fw-bold mb-0">
+                    Doctor:
+                    <span id="doctor-name"
+                          class="text-primary">
+                        --
+                    </span>
+                </h4>
+
+                <button class="btn btn-warning"
+                        id="review-btn"
+                        data-bs-toggle="modal"
+                        data-bs-target="#reviewModal">
+                    Review Doctor
+                </button>
+
+            </div>
+
+            <!-- DIAGNOSIS -->
+            <h4 class="fw-bold mb-3">Diagnosis</h4>
+
+            <div class="border rounded p-3 bg-light mb-5"
+                 style="min-height:120px;"
+                 id="diagnosis-box">
+                Loading...
+            </div>
+
+            <!-- PRESCRIPTION -->
+            <h4 class="fw-bold mb-3">Prescription</h4>
+
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered table-hover text-center align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>No</th>
+                            <th>Name of medicine</th>
+                            <th>Dosage</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="prescription-table">
+                        <tr>
+                            <td colspan="6">Loading...</td>
+                        </tr>
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <th colspan="5"
+                                class="text-end">
+                                Total Amount
+                            </th>
+                            <th id="medicine-total">0 VND</th>
+                        </tr>
+                    </tfoot>
+
+                </table>
+            </div>
+
+            <!-- PAYMENT -->
+            <h4 class="fw-bold mb-3">Payment Summary</h4>
+
+            <div class="row g-3 mb-5">
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Deposit</label>
+                    <input type="text"
+                           class="form-control"
+                           id="payment-deposit"
+                           disabled>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Medicine</label>
+                    <input type="text"
+                           class="form-control"
+                           id="payment-medicine"
+                           disabled>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Laboratory</label>
+                    <input type="text"
+                           class="form-control"
+                           id="payment-lab"
+                           disabled>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Final</label>
+                    <input type="text"
+                           class="form-control"
+                           id="payment-final"
+                           disabled>
+                </div>
+
+                <div class="col-md-12">
+                    <label class="fw-bold text-danger">Total Paid</label>
+                    <input type="text"
+                           class="form-control fw-bold"
+                           id="payment-total"
+                           disabled>
+                </div>
+
+            </div>
+
+            <!-- LAB TEST -->
+            <h4 class="fw-bold mb-3">Laboratory Result</h4>
+
+            <div class="table-responsive mb-5">
+                <table class="table table-bordered table-hover text-center align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>No</th>
+                            <th>Laboratory</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="lab-table">
+                        <tr>
+                            <td colspan="3">Loading...</td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- REVIEW MODAL -->
+<div class="modal fade"
+     id="reviewModal"
+     tabindex="-1">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title text-danger fw-bold">
+                    Review Doctor
+                </h4>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- STAR RATING -->
+                <div class="text-center mb-4">
+
+                    <div id="star-rating"
+                         class="fs-1 text-secondary"
+                         style="cursor:pointer; letter-spacing:6px;">
+
+                        <span data-value="1">★</span>
+                        <span data-value="2">★</span>
+                        <span data-value="3">★</span>
+                        <span data-value="4">★</span>
+                        <span data-value="5">★</span>
+
+                    </div>
+
+                    <input type="hidden"
+                           id="rating-value">
+
+                </div>
+
+                <!-- COMMENT -->
+                <div class="mb-3">
+                    <label class="fw-bold">Comment</label>
+
+                    <textarea class="form-control"
+                              rows="4"
+                              id="review-comment"
+                              placeholder="Write your comment..."></textarea>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <button class="btn btn-primary"
+                        id="submit-review-btn">
+                    Submit Review
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+    window.APPOINTMENT_ID = {{ appointment_id|tojson }};
+</script>
+
+<script src="{{ url_for('static', filename='js/patient/medical_history.js') }}"></script>
+
+{% endblock %}

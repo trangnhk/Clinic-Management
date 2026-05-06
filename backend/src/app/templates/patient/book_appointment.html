@@ -1,0 +1,131 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Book Appointment{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-11">
+
+        <!-- TITLE -->
+        <h1 class="text-danger text-center fw-bold mb-4">
+            BOOK APPOINTMENT
+        </h1>
+
+        <!-- PROFILE -->
+        <h3 class="fw-bold mb-3">Patient's profile</h3>
+
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-6">
+                <label class="fw-bold">Fullname</label>
+                <input type="text" class="form-control" id="fullname">
+            </div>
+
+            <div class="col-md-6">
+                <label class="fw-bold">ID</label>
+                <input type="text" class="form-control" id="patient-id" disabled>
+            </div>
+
+            <div class="col-md-6">
+                <label class="fw-bold">Date of birth</label>
+                <input type="date" class="form-control" id="dob">
+            </div>
+
+            <div class="col-md-6">
+                <label class="fw-bold">Number</label>
+                <input type="text" class="form-control" id="phone">
+            </div>
+
+            <div class="col-md-6">
+                <label class="fw-bold">Address</label>
+                <input type="text" class="form-control" id="address">
+            </div>
+
+            <div class="col-md-6">
+                <label class="fw-bold">Email</label>
+                <input type="text" class="form-control" id="email" disabled>
+            </div>
+
+            <div class="col-12">
+                <label class="fw-bold">Symptom</label>
+                <textarea class="form-control" rows="4" id="notes"></textarea>
+            </div>
+
+        </div>
+
+        <!-- EXAMINATION -->
+        <h3 class="fw-bold mb-3">Examination Information</h3>
+
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-6">
+                <label class="fw-bold">Speciality</label>
+                <select class="form-select" id="specialization">
+                    <option value="">Choose speciality</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="fw-bold">Doctor</label>
+                <select class="form-select" id="doctor">
+                    <option value="">Choose doctor</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="fw-bold">Date</label>
+                <input type="date" class="form-control" id="appt-date">
+            </div>
+
+        </div>
+
+        <!-- TIME -->
+        <h2 class="text-center fw-bold mb-3">TIME</h2>
+
+        <div class="row g-2 justify-content-center mb-4" id="timeslots"></div>
+
+        <!-- BUTTONS -->
+        <div class="text-center mb-5">
+
+            <button class="btn btn-primary px-5 me-3" id="confirm-btn">
+                Confirm
+            </button>
+
+            <button class="btn btn-danger px-5" id="cancel-btn">
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="modal fade" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h3 class="modal-title text-danger fw-bold">
+                    PAYMENT
+                </h3>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" id="payment-body">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth/apis.js') }}"></script>
+<script src="{{ url_for('static', filename='js/patient/book_appointment.js') }}"></script>
+{% endblock %}

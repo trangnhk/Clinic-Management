@@ -1,0 +1,19 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h1 class="text-center text-danger mb-4">
+        Our doctors are dedicated to your health
+    </h2>
+
+    <!-- Doctor list -->
+    <div class="row" id="doctor-list">
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/patient/doctors.js') }}"></script>
+{% endblock scripts %}
