@@ -1,5 +1,5 @@
 import pytest
-from app.models import Examination
+from app.models import Examination, Payment, Prescription, PrescriptionDetail, TestRequest, TestStatusEnum
 from app.db.db import db
 
 @pytest.fixture
@@ -265,9 +265,134 @@ def test_update_examination_not_found(client, auth_header):
 
     assert "Examination not found" in res.get_json()["error"]
 
+# SAVE EXAMINATION
+def test_save_examination_success(client, auth_header, in_progress_examination, prescription_detail, in_progress_test_request):
+    exam = in_progress_examination
 
+    res = client.post(f"/api/doctor/examinations/{exam.id}/save", headers=auth_header)
 
+    assert res.status_code == 200
 
+    data = res.get_json()
+
+    # medicine:
+    # Paracetamol 10000 * 2 = 20000
+    # Vitamin C 15000 * 1 = 15000
+    # total = 35000
+    assert data["medicine"] == 35000
+
+    # lab test:
+    # Xét nghiệm máu = 50000
+    assert data["lab_test"] == 50000
+
+    medicine_payment = Payment.query.filter_by(
+        appointment_id=exam.appointment_id,
+        payment_type="MEDICINE"
+    ).first()
+
+    lab_payment = Payment.query.filter_by(
+        appointment_id=exam.appointment_id,
+        payment_type="LAB_TEST"
+    ).first()
+
+    assert medicine_payment is not None
+    assert medicine_payment.amount == 35000
+    assert medicine_payment.status == "PENDING"
+
+    assert lab_payment is not None
+    assert lab_payment.amount == 50000
+
+def test_save_examination_not_found(client, auth_header):
+    res = client.post("/api/doctor/examinations/99999/save",headers=auth_header)
+
+    assert res.status_code == 400
+
+    data = res.get_json()
+
+    assert "Examination not found" in data["error"]
+
+def test_save_examination_doctor_mismatch(client, users, in_progress_examination, prescription_detail):
+    other_doctor = users["doctor_usernames"][1]
+
+    doctor_login = client.post("/api/auth/login", json={
+        "username": other_doctor,
+        "password": "123"
+    })
+
+    token = doctor_login.get_json()["access_token"]
+    
+    exam = in_progress_examination
+
+    res = client.post(f"/api/doctor/examinations/{exam.id}/save", headers={"Authorization": f"Bearer {token}"})
+
+    assert res.status_code == 400
+
+    data = res.get_json()
+
+    assert "Doctor mismatch" in data["error"]
+
+def test_save_examination_invalid_status(client, auth_header, completed_examination, prescription_with_completed_exam):
+    exam = completed_examination
+
+    res = client.post(f"/api/doctor/examinations/{exam.id}/save", headers=auth_header)
+
+    assert res.status_code == 400
+
+    data = res.get_json()
+
+    assert "Cannot save" in data["error"]
+
+def test_save_examination_without_prescription(client, auth_header, in_progress_examination):
+    exam = in_progress_examination
+
+    res = client.post(f"/api/doctor/examinations/{exam.id}/save", headers=auth_header)
+
+    assert res.status_code == 200
+
+    data = res.get_json()
+
+    assert data["medicine"] == 0
+    assert data["lab_test"] == 0
+
+def test_save_examination_upsert_payment(client, auth_header, in_progress_examination, prescription_detail):
+    exam = in_progress_examination
+
+    old_payment = Payment(
+        appointment_id=exam.appointment_id,
+        payment_type="MEDICINE",
+        amount=1000,
+        status="PENDING"
+    )
+
+    db.session.add(old_payment)
+    db.session.commit()
+
+    response = client.post(f"/api/doctor/examinations/{exam.id}/save", headers=auth_header)
+
+    assert response.status_code == 200
+
+    payments = Payment.query.filter_by(
+        appointment_id=exam.appointment_id,
+        payment_type="MEDICINE",
+        status="PENDING"
+    ).all()
+
+    # phải chỉ có 1 payment
+    assert len(payments) == 1
+
+    # amount được update
+    assert payments[0].amount == 35000
+
+def test_save_examination_forbidden_role(client, patient_token, in_progress_examination):
+    exam = in_progress_examination
+
+    response = client.post(f"/api/doctor/examinations/{exam.id}/save", headers={"Authorization": f"Bearer {patient_token}"})
+
+    assert response.status_code == 403
+
+    data = response.get_json()
+
+    assert data["error"] == "Forbidden"
 
 
 

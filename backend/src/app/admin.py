@@ -1,4 +1,5 @@
-from flask_admin import Admin
+from flask import session, url_for, redirect, abort
+from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from app.db.db import db
 from app.models import User, Doctor, Patient, Specialization, Appointment, Medicine, TimeSlot, DoctorSchedule, Prescription, PrescriptionDetail, Review, Test, TestRequest, Examination
@@ -6,7 +7,30 @@ from flask_admin.contrib.sqla import ModelView
 from werkzeug.security import generate_password_hash
 from wtforms_sqlalchemy.fields import QuerySelectField
 
-class UserAdmin(ModelView):
+def is_admin():
+    return session.get("user_role") == "ADMIN"
+
+class SecureAdminIndexView(AdminIndexView):
+    @expose("/")
+    def index(self):
+        if not is_admin():
+            return abort(403)
+        return super().index()
+
+    def is_accessible(self):
+        return is_admin()
+    
+    def inaccessible_callback(self, name, **kwargs):
+        return abort(403)
+    
+class SecureModelView(ModelView):
+    def is_accessible(self):
+        return is_admin()
+
+    def inaccessible_callback(self, name, **kwargs):
+        return abort(403)
+
+class UserAdmin(SecureModelView):
     column_list = ("id", "username", "email", "role", "is_active")
     form_columns = ("username", "email", "password_hash", "role", "gender")
     form_excluded_columns = ("doctor", "patient")
@@ -15,7 +39,7 @@ class UserAdmin(ModelView):
         if is_created or form.password_hash.data != model.password_hash:
             model.password_hash = generate_password_hash(form.password_hash.data)
 
-class DoctorAdmin(ModelView):
+class DoctorAdmin(SecureModelView):
     column_list = ("id", "user", "specialization", "experience_years")
 
     form_columns = ("user", "specialization", "experience_years", "description")
@@ -27,7 +51,7 @@ class DoctorAdmin(ModelView):
         }
     }
 
-class PatientAdmin(ModelView):
+class PatientAdmin(SecureModelView):
     column_list = ("id", "user", "date_of_birth", "address")
 
     form_columns = ("user", "date_of_birth", "address")
@@ -39,13 +63,13 @@ class PatientAdmin(ModelView):
         }
     }
 
-class MedicineAdmin(ModelView):
+class MedicineAdmin(SecureModelView):
     column_list = ("id", "name", "price")
 
-class SpecializationAdmin(ModelView):
+class SpecializationAdmin(SecureModelView):
     column_list = ("id", "name")
 
-class ScheduleAdmin(ModelView):
+class ScheduleAdmin(SecureModelView):
     column_list = ("id", "doctor", "date", "timeslot", "status")
 
     form_columns = ("doctor", "date", "timeslot", "status")
@@ -57,10 +81,10 @@ class ScheduleAdmin(ModelView):
         }
     }
     
-class TimeSlotAdmin(ModelView):
+class TimeSlotAdmin(SecureModelView):
     column_list = ("id", "start_time", "end_time")
 
-class AppointmentAdmin(ModelView):
+class AppointmentAdmin(SecureModelView):
     column_list = ("id", "doctor", "patient", "date", "timeslot", "status", "payment_status", "test_status")
 
     form_columns = ("doctor", "patient","timeslot","date","status","payment_status","test_status","notes")
@@ -81,7 +105,7 @@ class AppointmentAdmin(ModelView):
     }
 
 
-class ExaminationAdmin(ModelView):
+class ExaminationAdmin(SecureModelView):
     column_list = ("id", "appointment", "diagnosis")
 
     form_columns = ("appointment", "diagnosis")
@@ -93,7 +117,7 @@ class ExaminationAdmin(ModelView):
         }
     }
 
-class PrescriptionAdmin(ModelView):
+class PrescriptionAdmin(SecureModelView):
     column_list = ("id", "examination")
 
     form_columns = ("examination",)
@@ -105,7 +129,7 @@ class PrescriptionAdmin(ModelView):
         }
     }
 
-class PrescriptionDetailAdmin(ModelView):
+class PrescriptionDetailAdmin(SecureModelView):
     column_list = ("id", "prescription", "medicine", "dosage", "quantity")
 
     form_columns = ("prescription", "medicine", "dosage", "quantity", "instruction")
@@ -124,7 +148,7 @@ class PrescriptionDetailAdmin(ModelView):
 def setup_admin(app):
     if app.config.get("TESTING"):
         return None
-    admin = Admin(app, name="Clinic Admin")
+    admin = Admin(app, name="Clinic Admin", index_view=SecureAdminIndexView())
 
     admin.add_view(UserAdmin(User, db.session))
     admin.add_view(DoctorAdmin(Doctor, db.session))

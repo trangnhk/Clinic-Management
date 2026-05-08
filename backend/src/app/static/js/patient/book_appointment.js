@@ -135,10 +135,23 @@ async function confirmBooking() {
             notes: document.getElementById("notes").value
         };
 
+        const selectedDate = document.getElementById("appt-date").value;
+        const today = new Date().toISOString().split("T")[0];
+
+        if (selectedDate < today) {
+            alert("Cannot book appointment in the past!");
+            return;
+        }
+
         const res = await authFetch("/api/patient/appointments", {
             method: "POST",
             body: JSON.stringify(payload)
         });
+
+        if (!res.ok) {
+            alert(`Booking failed: ${data.error || "Unknown error"}`);
+            return;
+        }
 
         const data = await res.json();
 
@@ -216,6 +229,11 @@ async function makePayment() {
         });
 
         const data = await res.json();
+
+        if (!res.ok) {
+            alert(`Payment failed: ${data.error || "Unknown error"}`);
+            return;
+        }
 
         alert("Payment successful!");
 

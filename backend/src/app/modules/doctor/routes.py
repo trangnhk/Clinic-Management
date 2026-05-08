@@ -927,6 +927,47 @@ def delete_lab_test(id):
         traceback.print_exc()
         return jsonify({"error": str(e)}), 400
 
+@doctor_bp.route("/examinations/<int:id>/save", methods=["POST"])
+@jwt_required()
+def save_exam_route(id):
+    """
+    Save examination — upsert Payment MEDICINE + LAB_TEST (status=PENDING)
+    ---
+    tags:
+      - Doctor
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID phiếu khám (examination_id)
+    responses:
+      200:
+        description: Đã lưu, trả về medicine cost và lab test cost mới nhất
+        schema:
+          type: object
+          properties:
+            medicine:
+              type: number
+              example: 150000
+            lab_test:
+              type: number
+              example: 100000
+      400:
+        description: Examination not found / Appointment status không hợp lệ
+      403:
+        description: Forbidden
+    """
+    try:
+        current_user = get_jwt_identity()
+        if not doctor_only():
+            return jsonify({"error": "Forbidden"}), 403
+
+        result = save_examination(exam_id=id, user_id=current_user)
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 @doctor_bp.route("/appointments/<int:id>/complete", methods=["POST"])
 @jwt_required()

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from .dao import register_user, login_user
 from app.db.db import db
 from flask_jwt_extended import create_access_token
@@ -106,6 +106,10 @@ def login():
     
     if not user:
         return jsonify({"error": "Invalid"}), 401
+
+    session["user_role"] = user.role
+    session["user_id"] = user.id
+
     access_token = create_access_token(
         identity=str(user.id),
         additional_claims={

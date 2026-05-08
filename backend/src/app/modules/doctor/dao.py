@@ -496,6 +496,60 @@ def delete_lab_test_request(test_request_id, user_id):
     db.session.commit()
     return True
 
+def save_examination(exam_id, user_id):
+    exam = Examination.query.get(exam_id)
+    
+    if not exam:
+        raise ValueError("Examination not found")
+    
+    doctor = get_doctor_by_user_id(user_id)
+    appointment = get_appointment_by_id(id=exam.appointment_id)
+
+    if appointment.doctor_id != doctor.id:
+        raise ValueError("Doctor mismatch")
+    
+    if appointment.status not in [AppointmentStatusEnum.IN_PROGRESS, AppointmentStatusEnum.PENDING_RESULT]:
+        raise ValueError(f"Cannot save: appointment status is {appointment.status}")
+    
+    medicine_cost = 0
+    if exam.prescription:
+        for d in exam.prescription.details:
+            if d.medicine:
+                medicine_cost += d.medicine.price * d.quantity
+
+    lab_test_cost = 0
+    for tr in appointment.test_requests:
+        if tr.test:
+            lab_test_cost += tr.test.price
+
+    _upsert_payment(appointment.id, "MEDICINE", medicine_cost)
+    _upsert_payment(appointment.id, "LAB_TEST", lab_test_cost)
+    
+    db.session.commit()
+    return {
+        "medicine": float(medicine_cost),
+        "lab_test": float(lab_test_cost)
+    }
+
+def _upsert_payment(appointment_id, payment_type, amount):
+    """Tạo mới hoặc ghi đè Payment PENDING."""
+    existing = Payment.query.filter_by(
+        appointment_id=appointment_id,
+        payment_type=payment_type,
+        status="PENDING"
+    ).first()
+
+    if existing:
+        existing.amount = amount
+    else:
+        new_payment = Payment(
+            appointment_id=appointment_id,
+            payment_type=payment_type,
+            amount=amount,
+            status="PENDING"
+        )
+        db.session.add(new_payment)
+
 def complete_appointment(appointment_id, user_id):
     doctor = get_doctor_by_user_id(user_id)
     appointment = get_appointment_by_id(appointment_id)
@@ -517,8 +571,34 @@ def complete_appointment(appointment_id, user_id):
     
     if appointment.status == AppointmentStatusEnum.COMPLETED:
         raise ValueError("Appointment is already completed")
+
+    pending_payments = Payment.query.filter_by(
+        appointment_id=appointment_id,
+        status="PENDING"
+    ).all()
+
+    now = datetime.now()
+
+    for p in pending_payments:
+        p.status = "PAID"
+        p.paid_at = now
     
+    REMAINING_CONSULTATION_FEE = 400000
+    total_payment = sum(p.amount for p in pending_payments) + REMAINING_CONSULTATION_FEE
+
+    final = _upsert_payment(appointment.id, "FINAL", total_payment)
+
+    final_payment = Payment.query.filter_by(
+        appointment_id=appointment_id,
+        payment_type="FINAL",
+        status="PENDING"
+    ).first()
+
+    final_payment.status = "PAID"
+    final_payment.paid_at = now
+
     appointment.status = AppointmentStatusEnum.COMPLETED
+
     db.session.commit()
     return appointment
 

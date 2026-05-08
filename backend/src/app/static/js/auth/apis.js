@@ -34,3 +34,5 @@ async function authFetch(url, options = {}) {
     }
     return res;
 }
+
+if (typeof module !== "undefined") module.exports = { getToken, authFetch };

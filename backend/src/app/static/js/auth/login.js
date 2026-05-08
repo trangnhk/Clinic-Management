@@ -56,3 +56,12 @@ async function loginUser(e) {
         errorBox.innerText = "Server error";
     }
 }
+
+if (typeof module !== "undefined") module.exports = { loginUser };
+
+if (typeof document !== "undefined") {
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("login-form");
+        if (form) form.addEventListener("submit", loginUser);
+    });
+}

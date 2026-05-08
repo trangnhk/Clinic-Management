@@ -130,10 +130,21 @@ async function saveExam() {
             alert(data.error);
             return;
         }
-
-        alert("Updated successfully");
     }
 
+    const saveRes = await authFetch(
+        `/api/doctor/examinations/${examinationId}/save`,
+        { method: "POST" }
+    );
+
+    const saveData = await saveRes.json();
+
+    if (!saveRes.ok) {
+        alert("Saved exam but failed to update payment: " + saveData.error);
+        return;
+    }
+
+    alert("Updated successfully");
     loadDetail();
 }
 
