@@ -844,6 +844,37 @@ def add_prescription_route(id):
 @doctor_bp.route("/prescriptions/<int:detail_id>", methods=["DELETE"])
 @jwt_required()
 def delete_prescription_detail_route(detail_id):
+    """
+    Delete prescription detail (Xóa thuốc khỏi đơn thuốc)
+    ---
+    tags:
+      - Doctor
+    parameters:
+      - name: detail_id
+        in: path
+        type: integer
+        required: true
+        description: ID chi tiết đơn thuốc (prescription_detail_id)
+    responses:
+      200:
+        description: Xóa thuốc khỏi đơn thuốc thành công
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: "Deleted successfully"
+      400:
+        description: |
+          - Không tìm thấy prescription detail
+          - Prescription không thuộc bác sĩ này
+          - Appointment không ở trạng thái hợp lệ
+      403:
+        description: Không có quyền truy cập
+      500:
+        description: Lỗi máy chủ nội bộ
+    """
+
     try:
         current_user = get_jwt_identity()
         if not doctor_only():
@@ -861,6 +892,62 @@ def delete_prescription_detail_route(detail_id):
 @doctor_bp.route("/examinations/<int:id>/lab-tests", methods=["POST"])
 @jwt_required()
 def add_lab_test(id):
+    """
+    Add lab test request (Yêu cầu xét nghiệm)
+    ---
+    tags:
+      - Doctor
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID phiếu khám (examination_id)
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required:
+            - test_id
+          properties:
+            test_id:
+              type: integer
+              example: 2
+    responses:
+      201:
+        description: Tạo yêu cầu xét nghiệm thành công
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 5
+            test_id:
+              type: integer
+              example: 2
+            appointment_id:
+              type: integer
+              example: 10
+            status:
+              type: string
+              enum:
+                - PENDING
+                - IN_PROGRESS
+                - DONE
+              example: "PENDING"
+      400:
+        description: |
+          - Thiếu test_id
+          - Không tìm thấy examination hoặc test
+          - Appointment không ở trạng thái hợp lệ
+          - Examination không thuộc bác sĩ này
+      403:
+        description: Không có quyền truy cập
+      500:
+        description: Lỗi máy chủ nội bộ
+    """
+    
     try:
         current_user = get_jwt_identity()
         if not doctor_only():
@@ -891,6 +978,58 @@ def add_lab_test(id):
 @doctor_bp.route("/examinations/<int:id>/lab-tests", methods=["GET"])
 @jwt_required()
 def get_lab_tests(id):
+    """
+    Get lab tests by examination (Xem danh sách xét nghiệm)
+    ---
+    tags:
+      - Doctor
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID phiếu khám (examination_id)
+    responses:
+      200:
+        description: Danh sách yêu cầu xét nghiệm của phiếu khám
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 5
+              test_id:
+                type: integer
+                example: 2
+              test_name:
+                type: string
+                example: "Xét nghiệm máu"
+              test_price:
+                type: number
+                example: 150000
+              status:
+                type: string
+                enum:
+                  - PENDING
+                  - IN_PROGRESS
+                  - DONE
+                example: "PENDING"
+              result:
+                type: string
+                nullable: true
+                example: "Các chỉ số bình thường"
+      400:
+        description: |
+          - Không tìm thấy examination
+          - Examination không thuộc bác sĩ này
+      403:
+        description: Không có quyền truy cập
+      500:
+        description: Lỗi máy chủ nội bộ
+    """
+    
     try:
         current_user = get_jwt_identity()
 
@@ -911,6 +1050,37 @@ def get_lab_tests(id):
 @doctor_bp.route("/lab-tests/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_lab_test(id):
+    """
+    Delete lab test request (Xóa yêu cầu xét nghiệm)
+    ---
+    tags:
+      - Doctor
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID yêu cầu xét nghiệm (lab_test_request_id)
+    responses:
+      200:
+        description: Xóa yêu cầu xét nghiệm thành công
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: "Deleted"
+      400:
+        description: |
+          - Không tìm thấy yêu cầu xét nghiệm
+          - Appointment không ở trạng thái hợp lệ
+          - Yêu cầu xét nghiệm không thuộc bác sĩ này
+      403:
+        description: Không có quyền truy cập
+      500:
+        description: Lỗi máy chủ nội bộ
+    """
+    
     try:
         current_user = get_jwt_identity()
 
@@ -972,6 +1142,43 @@ def save_exam_route(id):
 @doctor_bp.route("/appointments/<int:id>/complete", methods=["POST"])
 @jwt_required()
 def complete_appointment_route(id):
+    """
+    Complete appointment (Hoàn thành lịch khám)
+    ---
+    tags:
+      - Doctor
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID lịch khám
+    responses:
+      200:
+        description: Hoàn thành lịch khám thành công
+        schema:
+          type: object
+          properties:
+            appointment_id:
+              type: integer
+              example: 10
+            status:
+              type: string
+              example: "COMPLETED"
+            message:
+              type: string
+              example: "Appointment completed successfully"
+      400:
+        description: |
+          - Không tìm thấy appointment
+          - Appointment chưa đủ điều kiện hoàn thành
+          - Appointment không thuộc bác sĩ này
+      403:
+        description: Không có quyền truy cập
+      500:
+        description: Lỗi máy chủ nội bộ
+    """
+    
     try:
         current_user = get_jwt_identity()
 
@@ -997,6 +1204,40 @@ def complete_appointment_route(id):
 @doctor_bp.route("/medicines", methods=["GET"])
 @jwt_required()
 def get_medicines_route():
+    """
+    Get all medicines (Lấy danh sách thuốc)
+    ---
+    tags:
+      - Doctor
+    responses:
+      200:
+        description: Danh sách tất cả thuốc trong hệ thống
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              name:
+                type: string
+                example: "Paracetamol"
+              unit:
+                type: string
+                example: "Viên"
+              price:
+                type: number
+                example: 5000
+              stock_quantity:
+                type: integer
+                example: 100
+      403:
+        description: Không có quyền truy cập
+      500:
+        description: Lỗi máy chủ nội bộ
+    """
+    
     try:
         if not doctor_only():
             return jsonify({"error": "Forbidden"}), 403
@@ -1010,6 +1251,38 @@ def get_medicines_route():
 @doctor_bp.route("/tests", methods=["GET"])
 @jwt_required()
 def get_tests_route():
+    """
+    Get all lab tests (Lấy danh sách xét nghiệm)
+    ---
+    tags:
+      - Doctor
+    responses:
+      200:
+        description: Danh sách tất cả xét nghiệm
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              name:
+                type: string
+                example: "Xét nghiệm máu"
+              price:
+                type: number
+                example: 150000
+              description:
+                type: string
+                nullable: true
+                example: "Kiểm tra các chỉ số máu cơ bản"
+      403:
+        description: Không có quyền truy cập
+      500:
+        description: Lỗi máy chủ nội bộ
+    """
+    
     try:
         if not doctor_only():
             return jsonify({"error": "Forbidden"}), 403
