@@ -1,4 +1,4 @@
-from flask import session, url_for, redirect, abort, render_template_string
+from flask import session, url_for, redirect, abort, render_template_string, flash
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from app.db.db import db
@@ -7,8 +7,10 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
 from werkzeug.security import generate_password_hash
 from wtforms_sqlalchemy.fields import QuerySelectField
-from wtforms.validators import ValidationError
+from wtforms.validators import ValidationError, DataRequired, NumberRange, Regexp
 from datetime import time
+from wtforms import DecimalField
+
 
 def is_admin():
     return session.get("user_role") == "ADMIN"
@@ -49,13 +51,48 @@ class SecureModelView(ModelView):
         return abort(403)
 
 class UserAdmin(SecureModelView):
-    column_list = ("id", "username", "email", "role", "is_active")
-    form_columns = ("username", "email", "password_hash", "role", "gender")
+    column_list = ("id", "username", "email", "role", "is_active", "phone_number")
+    form_columns = ("username", "email", "password_hash", "role", "gender", "phone_number")
     form_excluded_columns = ("doctor", "patient")
 
+    form_args = {
+        "password_hash": {
+            "validators": [
+                DataRequired(message="Password is required")
+            ]
+        },
+        "email": {
+            "validators": [
+                DataRequired(message="Email is required"),
+                Regexp(r'^[^@]+@[^@]+\.[^@]+$', message="Invalid email format")
+            ]
+        }
+    }
+
     def on_model_change(self, form, model, is_created):
-        if is_created or form.password_hash.data != model.password_hash:
+        existing_username = User.query.filter(db.func.lower(User.username) == model.username.lower()).first()
+
+        if is_created:
+            if existing_username:
+                raise ValidationError("Username already exists")
+
+        else:
+            if (existing_username and existing_username.id != model.id):
+                raise ValidationError("Username already exists")
+        
+        existing_email = User.query.filter(db.func.lower(User.email) == model.email.lower()).first()
+
+        if is_created:
+            if existing_email:
+                raise ValidationError("Email already exists")
+        else:
+            if (existing_email and existing_email.id != model.id):
+                raise ValidationError("Email already exists")
+
+        # hash password
+        if (is_created or form.password_hash.data != model.password_hash):
             model.password_hash = generate_password_hash(form.password_hash.data)
+
 
 class DoctorAdmin(SecureModelView):
     column_list = ("id", "user", "specialization", "experience_years")
@@ -66,8 +103,34 @@ class DoctorAdmin(SecureModelView):
         "user": {
             "query_factory": lambda: User.query.filter_by(role="DOCTOR"),
             "get_label": lambda u: f"{u.username} ({u.email})"
+        },
+        "experience_years":{
+            "validators": [
+                NumberRange(min=0, message="Experience years must be a non-negative integer")
+            ]
         }
     }
+
+    def delete_model(self, model):
+        try:
+            # Check doctor schedules
+            has_schedule = DoctorSchedule.query.filter_by(doctor_id=model.id).first()
+
+            if has_schedule:
+                raise Exception("Cannot delete doctor because doctor has schedules")
+
+            db.session.delete(model)
+            db.session.commit()
+
+            return True
+
+        except Exception as ex:
+            db.session.rollback()
+
+            flash(str(ex), "error")
+
+            return False
+
 
 class PatientAdmin(SecureModelView):
     column_list = ("id", "user", "date_of_birth", "address")
@@ -83,9 +146,55 @@ class PatientAdmin(SecureModelView):
 
 class MedicineAdmin(SecureModelView):
     column_list = ("id", "name", "price")
+    form_columns = ("name", "price", "description")
+    form_overrides = {
+        "price": DecimalField
+    }
+
+    form_args = {
+        "name": {
+            "validators": [
+                DataRequired(message="Medicine name is required")
+            ]
+        },
+
+        "price": {
+            "validators": [
+                DataRequired(message="Price is required"),
+                NumberRange(min=0.01, message="Price must be > 0")
+            ]
+        }
+    }
+
 
 class SpecializationAdmin(SecureModelView):
     column_list = ("id", "name")
+    form_columns = ("name", "description")
+
+    def on_model_change(self, form, model, is_created):
+        # validate empty
+        if not model.name:
+            raise ValidationError("Specialization name is required")
+        
+        name = " ".join(model.name.strip().split())
+        specializations = Specialization.query.all()
+
+        for s in specializations:
+            if s is model:
+                continue
+
+            # CREATE
+            if is_created:
+
+                if s.name and s.name.strip().lower() == name.lower():
+                    raise ValidationError("Specialization name already exists")
+
+            # UPDATE
+            else:
+                if (s.id != model.id and s.name and s.name.strip().lower() == name.lower()):
+                    raise ValidationError("Specialization name already exists")
+
+        model.name = name
 
 class ScheduleAdmin(SecureModelView):
     column_list = ("id", "doctor", "date", "timeslot", "status")
