@@ -1,9 +1,10 @@
-from flask import session, url_for, redirect, abort
+from flask import session, url_for, redirect, abort, render_template_string
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from app.db.db import db
 from app.models import User, Doctor, Patient, Specialization, Appointment, Medicine, TimeSlot, DoctorSchedule, Prescription, PrescriptionDetail, Review, Test, TestRequest, Examination
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.menu import MenuLink
 from werkzeug.security import generate_password_hash
 from wtforms_sqlalchemy.fields import QuerySelectField
 from wtforms.validators import ValidationError
@@ -18,6 +19,21 @@ class SecureAdminIndexView(AdminIndexView):
         if not is_admin():
             return abort(403)
         return super().index()
+    
+    @expose("/logout")
+    def logout_view(self):
+        session.clear()
+
+        return render_template_string("""
+            <script>
+
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("user");
+
+                window.location.href = "/login";
+
+            </script>
+        """)
 
     def is_accessible(self):
         return is_admin()
@@ -172,8 +188,13 @@ class PrescriptionDetailAdmin(SecureModelView):
 def setup_admin(app):
     if app.config.get("TESTING"):
         return None
-    admin = Admin(app, name="Clinic Admin", index_view=SecureAdminIndexView())
+    admin = Admin(app, name="Clinic Admin", index_view=SecureAdminIndexView(), template_mode="bootstrap4")
 
+    admin.add_link(MenuLink(
+        name="Logout",
+        category="",
+        url="/admin/logout"
+    ))
     admin.add_view(UserAdmin(User, db.session))
     admin.add_view(DoctorAdmin(Doctor, db.session))
     admin.add_view(PatientAdmin(Patient, db.session))
