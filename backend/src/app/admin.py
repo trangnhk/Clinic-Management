@@ -6,6 +6,8 @@ from app.models import User, Doctor, Patient, Specialization, Appointment, Medic
 from flask_admin.contrib.sqla import ModelView
 from werkzeug.security import generate_password_hash
 from wtforms_sqlalchemy.fields import QuerySelectField
+from wtforms.validators import ValidationError
+from datetime import time
 
 def is_admin():
     return session.get("user_role") == "ADMIN"
@@ -83,6 +85,28 @@ class ScheduleAdmin(SecureModelView):
     
 class TimeSlotAdmin(SecureModelView):
     column_list = ("id", "start_time", "end_time")
+
+    def on_model_change(self, form, model, is_created):
+
+        # Validate start_time >= 08:00
+        if model.start_time < time(8, 0):
+            raise ValidationError(
+                "Start time must be greater than or equal to 08:00"
+            )
+
+        # Validate end_time <= 20:00
+        if model.end_time > time(20, 0):
+            raise ValidationError(
+                "End time must be less than or equal to 20:00"
+            )
+
+        # Validate start_time < end_time
+        if model.start_time >= model.end_time:
+            raise ValidationError(
+                "Start time must be before end time"
+            )
+
+        return super().on_model_change(form, model, is_created)
 
 class AppointmentAdmin(SecureModelView):
     column_list = ("id", "doctor", "patient", "date", "timeslot", "status", "payment_status", "test_status")

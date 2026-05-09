@@ -305,6 +305,8 @@ def update_patient_profile(user_id, date_of_birth=None, address=None, fullname=N
     if date_of_birth is not None:
         try:
             datetime.strptime(date_of_birth, "%Y-%m-%d")
+            if datetime.strptime(date_of_birth, "%Y-%m-%d").date() > datetime.now().date():
+                raise ValueError("Date of birth cannot be in the future")
         except:
             raise ValueError("Invalid date")
 
