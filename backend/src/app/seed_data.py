@@ -286,18 +286,22 @@ def seed_payments():
     print("Seeding payments...")
 
     DEPOSIT = 100000
-    CONSULTATION = 500000
+    REMAINING_CONSULTATION_FEE = 400000
 
     appointments = Appointment.query.all()
 
     for appt in appointments:
 
-        if Payment.query.filter_by(
+        exists = Payment.query.filter_by(
             appointment_id=appt.id
-        ).first():
+        ).first()
+
+        if exists:
             continue
 
-        # WAITING EXAMINATION
+        now = datetime.now()
+
+        # WAITING_EXAMINATION
         if appt.status == AppointmentStatusEnum.WAITING_EXAMINATION:
 
             db.session.add(Payment(
@@ -305,13 +309,14 @@ def seed_payments():
                 payment_type=PaymentTypeEnum.DEPOSIT,
                 amount=DEPOSIT,
                 status=PaymentStatusEnum.PAID,
-                paid_at=datetime.now()
+                paid_at=now
             ))
 
-        
-        # IN PROGRESS
-        
-        elif appt.status == AppointmentStatusEnum.IN_PROGRESS:
+        # IN_PROGRESS / PENDING_RESULT
+        elif appt.status in [
+            AppointmentStatusEnum.IN_PROGRESS,
+            AppointmentStatusEnum.PENDING_RESULT
+        ]:
 
             # Deposit
             db.session.add(Payment(
@@ -319,16 +324,24 @@ def seed_payments():
                 payment_type=PaymentTypeEnum.DEPOSIT,
                 amount=DEPOSIT,
                 status=PaymentStatusEnum.PAID,
-                paid_at=datetime.now()
+                paid_at=now
             ))
 
             # Medicine pending
             medicine_cost = 0
 
-            if appt.examination and appt.examination.prescription:
+            if (
+                appt.examination and
+                appt.examination.prescription
+            ):
 
                 for d in appt.examination.prescription.details:
-                    medicine_cost += d.quantity * d.medicine.price
+
+                    if d.medicine:
+                        medicine_cost += (
+                            d.quantity *
+                            d.medicine.price
+                        )
 
             if medicine_cost > 0:
 
@@ -339,11 +352,13 @@ def seed_payments():
                     status=PaymentStatusEnum.PENDING
                 ))
 
-            # Lab pending
+            # Lab test pending
             lab_cost = 0
 
-            for t in appt.test_requests:
-                lab_cost += t.test.price
+            for tr in appt.test_requests:
+
+                if tr.test:
+                    lab_cost += tr.test.price
 
             if lab_cost > 0:
 
@@ -354,57 +369,72 @@ def seed_payments():
                     status=PaymentStatusEnum.PENDING
                 ))
 
-        
         # COMPLETED
-        
         elif appt.status == AppointmentStatusEnum.COMPLETED:
 
-            # Deposit
+            # Deposit PAID
             db.session.add(Payment(
                 appointment_id=appt.id,
                 payment_type=PaymentTypeEnum.DEPOSIT,
                 amount=DEPOSIT,
                 status=PaymentStatusEnum.PAID,
-                paid_at=datetime.now()
+                paid_at=now
             ))
 
+            pending_total = 0
+
+            # Medicine
             medicine_cost = 0
 
-            if appt.examination and appt.examination.prescription:
+            if (
+                appt.examination and
+                appt.examination.prescription
+            ):
 
                 for d in appt.examination.prescription.details:
-                    medicine_cost += d.quantity * d.medicine.price
+
+                    if d.medicine:
+                        medicine_cost += (
+                            d.quantity *
+                            d.medicine.price
+                        )
 
             if medicine_cost > 0:
+
+                pending_total += medicine_cost
 
                 db.session.add(Payment(
                     appointment_id=appt.id,
                     payment_type=PaymentTypeEnum.MEDICINE,
                     amount=medicine_cost,
                     status=PaymentStatusEnum.PAID,
-                    paid_at=datetime.now()
+                    paid_at=now
                 ))
 
+            # Lab test
             lab_cost = 0
 
-            for t in appt.test_requests:
-                lab_cost += t.test.price
+            for tr in appt.test_requests:
+
+                if tr.test:
+                    lab_cost += tr.test.price
 
             if lab_cost > 0:
+
+                pending_total += lab_cost
 
                 db.session.add(Payment(
                     appointment_id=appt.id,
                     payment_type=PaymentTypeEnum.LAB_TEST,
                     amount=lab_cost,
                     status=PaymentStatusEnum.PAID,
-                    paid_at=datetime.now()
+                    paid_at=now
                 ))
 
+            # FINAL PAYMENT
             final_amount = (
-                CONSULTATION
-                - DEPOSIT
-                + medicine_cost
-                + lab_cost
+                pending_total
+                + REMAINING_CONSULTATION_FEE
             )
 
             db.session.add(Payment(
@@ -412,12 +442,10 @@ def seed_payments():
                 payment_type=PaymentTypeEnum.FINAL,
                 amount=final_amount,
                 status=PaymentStatusEnum.PAID,
-                paid_at=datetime.now()
+                paid_at=now
             ))
 
-        
         # CANCELED
-        
         elif appt.status == AppointmentStatusEnum.CANCELED:
 
             if random.choice([True, False]):
@@ -430,6 +458,8 @@ def seed_payments():
                 ))
 
     db.session.commit()
+
+    print("Payments seeded successfully!")
 
 # EXAMINATION
 
