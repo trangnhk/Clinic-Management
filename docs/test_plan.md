@@ -1,3 +1,18 @@
+# TEST PLAN
+## Hệ thống Quản lý Phòng khám – Clinic Management System
+
+---
+| Thông tin | Chi tiết |
+|:--|:--|
+| **Tên dự án** | Clinic Management System |
+| **Tên tài liệu** | Test Plan – Báo cáo Kết quả Kiểm thử |
+| **Phiên bản** | 1.0 |
+| **Người lập báo cáo** | Nhóm 1 – Ngô Hoàng Kiều Trang, Nguyễn Thanh Nhi |
+| **Giảng viên hướng dẫn** | ThS. Võ Việt Khoa |
+| **Môn học** | Kiểm thử Phần mềm – Lớp IM2301 |
+
+---
+
 # Chương 1: Giới thiệu
 
 ## 1. Tổng quan đề tài
