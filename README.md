@@ -2,80 +2,83 @@
 
 ## Overview
 
-Clinic Management System is a RESTful web application designed to streamline clinic operations by digitizing appointment booking, medical examinations, prescriptions, laboratory requests, and clinic administration.
+Clinic Management System is a RESTful web application developed to support the daily operations of a medical clinic.
 
-The system helps reduce waiting times, improve patient experience, and provide doctors with efficient tools to manage consultations, prescriptions, and diagnostic workflows.
+The system allows patients to book appointments online, doctors to manage consultations and prescriptions, and administrators to manage clinic resources such as doctors, specialties, and medicines.
 
-This project was developed as a Software Testing and Backend Development capstone project, with a strong focus on API design, business workflows, and software quality assurance.
+The project was developed as a Software Testing and Backend Development capstone project with a strong focus on API design, business workflows, and software quality assurance.
 
 ---
 
-## Key Features
+## Features
 
-### Patient Module
+### Patient Features
 
-* Register and authenticate accounts
-* Browse doctors and specialties
+* Register account
+* Login using JWT authentication
+* View doctor list
 * Book appointments online
-* Pay appointment deposits
 * View appointment history
-* View prescriptions and examination results
-* Submit doctor reviews and ratings
+* View prescriptions
 
-### Doctor Module
+### Doctor Features
 
-* View daily appointment schedules
-* Manage monthly working calendars
-* Create and update examinations
-* Record diagnoses and symptoms
-* Create electronic prescriptions
-* Request laboratory tests
-* Review laboratory results
-* Complete medical consultations
+* View assigned appointments
+* Create examinations
+* Record diagnosis information
+* Create prescriptions for patients
 
-### Admin Module
+### Admin Features
 
 * Manage doctors
 * Manage specialties
 * Manage medicines
-* Manage laboratory tests
-* Monitor appointments and clinic operations
+* Manage schedules and time slots through Flask-Admin
 
 ---
 
 ## System Architecture
 
-The application follows a layered Client–Server architecture using RESTful APIs.
+The application follows a layered Client–Server architecture.
 
 ```text
-Client (Web / Mobile)
+Client
+(Web / Mobile / Postman)
+
         │
         ▼
+
 REST API (Flask)
-        │
- ┌──────┴──────┐
- │   Routes    │
- │ Controllers │
- └──────┬──────┘
+
         │
         ▼
-   DAO Layer
+
+Routes Layer
+
+        │
+        ▼
+
+DAO Layer
 (Business Logic)
+
         │
         ▼
- SQLAlchemy ORM
+
+SQLAlchemy ORM
+
         │
         ▼
-      MySQL
+
+MySQL Database
 ```
 
-### Architectural Patterns
+### Design Patterns
 
 * Client–Server Architecture
 * RESTful API Design
-* DAO (Data Access Object) Pattern
-* JWT Authentication
+* DAO Pattern
 * Layered Architecture
+* JWT Authentication
 
 ---
 
@@ -94,21 +97,22 @@ REST API (Flask)
 * Pytest
 * Unit Testing
 * Integration Testing
+* API Testing
 * Manual Testing
-* API Testing (Postman)
 
-### Development Tools
+### Tools
 
-* Git & GitHub
+* Git
+* GitHub
 * Postman
-* Swagger / API Documentation
+* Swagger (Flasgger)
 * MySQL Workbench
 
 ---
 
 ## Authentication
 
-The system uses JWT-based authentication.
+JWT Authentication is used for securing APIs.
 
 Example:
 
@@ -116,15 +120,15 @@ Example:
 Authorization: Bearer <access_token>
 ```
 
-Role-based authorization is implemented for:
+Role-based authorization:
 
-* Patient
-* Doctor
-* Admin
+* PATIENT
+* DOCTOR
+* ADMIN
 
 ---
 
-## Main Business Workflow
+## Main Workflow
 
 ```text
 Patient
@@ -133,124 +137,98 @@ Patient
 Book Appointment
    │
    ▼
-Pay Deposit
+Doctor Views Appointment
    │
    ▼
-Doctor Consultation
-   │
-   ├── Diagnosis
-   ├── Prescription
-   └── Lab Test Request
+Create Examination
    │
    ▼
-Receive Results
+Create Prescription
    │
    ▼
-Complete Appointment
+Patient Views Prescription
 ```
 
 ---
 
 ## Database Entities
 
-Core entities include:
+### User Management
 
 * User
 * Patient
 * Doctor
-* Specialization
+
+### Appointment Management
+
 * Appointment
-* TimeSlot
 * DoctorSchedule
+* TimeSlot
+
+### Medical Records
+
 * Examination
 * Prescription
 * PrescriptionDetail
+
+### Administration
+
+* Specialization
 * Medicine
-* Test
-* TestRequest
-* Review
-* Payment
 
 ---
 
-## Testing
+## API Endpoints
 
-The project includes multiple testing levels:
-
-### Manual Testing
-
-* Functional Testing
-* Negative Testing
-* Authorization Testing
-* Boundary Value Analysis
-* Equivalence Partitioning
-
-### Automated Testing
-
-Implemented using Pytest:
-
-#### Unit Testing
-
-Testing individual business logic and DAO functions.
-
-#### Integration Testing
-
-Testing API endpoints and database interactions.
-
-Examples:
-
-* Appointment Management
-* Examination Management
-* Prescription Management
-* Laboratory Test Requests
-* Authentication & Authorization
-
----
-
-## API Modules
-
-### Authentication API
+### Authentication
 
 ```http
 POST /api/auth/register
 POST /api/auth/login
-POST /api/auth/refresh
 ```
 
-### Patient API
+---
+
+### Patient APIs
 
 ```http
-GET    /api/patient/doctors
-POST   /api/patient/appointments
-GET    /api/patient/history
-POST   /api/patient/reviews
+GET  /api/patient/doctors
+POST /api/patient/appointments
+GET  /api/patient/history
+GET  /api/patient/prescriptions
 ```
 
-### Doctor API
+---
+
+### Doctor APIs
 
 ```http
-GET    /api/doctor/profile
-PATCH  /api/doctor/profile
+GET  /api/doctor/appointments
 
-GET    /api/doctor/appointments
-GET    /api/doctor/appointments/{id}
+POST /api/doctor/examinations
 
-POST   /api/doctor/examinations
-PATCH  /api/doctor/examinations/{id}
-
-POST   /api/doctor/examinations/{id}/prescriptions
-POST   /api/doctor/examinations/{id}/lab-tests
-
-POST   /api/doctor/appointments/{id}/complete
+POST /api/doctor/prescriptions
 ```
 
-### Admin API
+---
 
-```http
-CRUD /api/admin/doctors
-CRUD /api/admin/specializations
-CRUD /api/admin/medicines
+### Admin Management
+
+Managed through Flask-Admin:
+
+```text
+/admin
 ```
+
+Available resources:
+
+* Users
+* Doctors
+* Patients
+* Specializations
+* Medicines
+* Doctor Schedules
+* Time Slots
 
 ---
 
@@ -259,9 +237,12 @@ CRUD /api/admin/medicines
 ### Clone Repository
 
 ```bash
-git clone https://github.com/your-username/clinic-management-system.git
-cd clinic-management-system
+git clone https://github.com/trangnhk/Clinic-Management.git
+
+cd backend\src 
 ```
+
+---
 
 ### Create Virtual Environment
 
@@ -271,15 +252,19 @@ python -m venv venv
 
 Activate environment:
 
-```bash
-source venv/bin/activate
-```
-
-or
+Windows:
 
 ```bash
 venv\Scripts\activate
 ```
+
+Linux/Mac:
+
+```bash
+source venv/bin/activate
+```
+
+---
 
 ### Install Dependencies
 
@@ -287,87 +272,137 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Configure Environment Variables
+---
+
+### Environment Variables
 
 Create a `.env` file:
 
 ```env
 SECRET_KEY=your_secret_key
 
+JWT_SECRET_KEY=your_jwt_secret
+
 MYSQL_HOST=localhost
 MYSQL_PORT=3306
 MYSQL_DATABASE=clinic_db
 MYSQL_USER=root
 MYSQL_PASSWORD=password
-
-JWT_SECRET_KEY=your_jwt_secret
 ```
 
-### Run Database Migration
+---
+
+### Run Migration
 
 ```bash
 flask db upgrade
 ```
 
-### Start Server
+---
+
+### Start Application
+
+```bash
+python -m app.modules.main.main_tests
+```
+
+or
 
 ```bash
 python run.py
 ```
 
-Application will run at:
+---
+
+Application URL:
 
 ```text
 http://localhost:5000
 ```
 
+Swagger:
+
+```text
+http://localhost:5000/apidocs
+```
+
+Admin:
+
+```text
+http://localhost:5000/admin
+```
+
 ---
 
-## Running Tests
+## Testing
 
-Run all tests:
+### Manual Testing
 
-```bash
-pytest
-```
+Techniques used:
 
-Generate coverage report:
+* Functional Testing
+* Boundary Value Analysis
+* Equivalence Partitioning
+* Negative Testing
+* Authorization Testing
 
-```bash
-pytest --cov=app
-```
+### Automated Testing
 
-Generate HTML coverage:
+Implemented using Pytest.
 
-```bash
-pytest --cov=app --cov-report=html
-```
+#### Unit Testing
+
+Testing DAO and business logic functions.
+
+Examples:
+
+* Authentication
+* Appointment creation
+* Prescription creation
+
+#### Integration Testing
+
+Testing REST API endpoints and database interactions.
+
+Examples:
+
+* Authentication APIs
+* Patient APIs
+* Doctor APIs
 
 ---
 
 ## Learning Outcomes
 
-Through this project, the team gained practical experience in:
+Through this project, the team gained experience in:
 
 * RESTful API Development
-* Backend System Design
-* Database Modeling
-* JWT Authentication & Authorization
-* Software Testing Practices
-* Unit & Integration Testing
+* Flask Backend Development
+* Database Design
+* JWT Authentication
+* Role-Based Authorization
+* Software Testing
+* Unit Testing
+* Integration Testing
+* API Documentation
 * Healthcare Workflow Modeling
-* Git Collaboration & Team Development
 
 ---
 
 ## Authors
-Ngo Hoang Kieu Trang
-Nguyen Thanh Nhi
-Team Size: 2 Members
 
-Role:
+### Ngo Hoang Kieu Trang
 
 * Backend Development
 * API Design
 * Database Design
-* Testing & Quality Assurance
+* Testing
+
+### Nguyen Thanh Nhi
+
+* Backend Development
+* API Testing
+* Documentation
+* Testing
+
+Team Size: 2 Members
